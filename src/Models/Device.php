@@ -3,31 +3,60 @@
 namespace Chipneedham\LaravelGovee\Models;
 
 // Represents a single device
-class Device {
-    public string $device;
-    public string $model;
-    public string $deviceName;
-    public bool $controllable;
-    public Properties $properties;
-    public bool $retrievable;
-    /** @var string[] */
-    public array $supportCmds;
 
-    public function __construct(
-        string $device,
-        string $model,
-        string $deviceName,
-        bool $controllable,
-        Properties $properties,
-        bool $retrievable,
-        array $supportCmds
-    ) {
-        $this->device = $device;
-        $this->model = $model;
-        $this->deviceName = $deviceName;
-        $this->controllable = $controllable;
-        $this->properties = $properties;
-        $this->retrievable = $retrievable;
-        $this->supportCmds = $supportCmds;
+use Chipneedham\LaravelGovee\GoveeApiClient;
+use GuzzleHttp\Exception\GuzzleException;
+
+class Device
+{
+    protected GoveeApiClient $client; // To make API calls
+    public string $deviceId;  // API: "device"
+    public string $name;      // API: "deviceName"
+    public string $model;     // API: "model"
+    public bool $controllable; // API: "controllable"
+    public bool $retrievable;  // API: "retrievable"
+    public array $supportedCommands; // API: "supportCmds"
+
+    public function __construct(GoveeApiClient $client, array $data)
+    {
+        $this->client = $client;
+        $this->deviceId = $data['device'] ?? null;
+        $this->name = $data['deviceName'] ?? null;
+        $this->model = $data['model'] ?? null;
+        $this->controllable = $data['controllable'] ?? false;
+        $this->retrievable = $data['retrievable'] ?? false;
+        $this->supportedCommands = $data['supportCmds'] ?? [];
+    }
+
+    /**
+     * @throws \Exception
+     * @throws GuzzleException
+     */
+    public function turnOff()
+    {
+        if (!$this->controllable || !in_array('turn', $this->supportedCommands)) {
+            throw new \Exception("Device {$this->deviceId} cannot be turned off.");
+        }
+
+        return $this->client->controlDevice($this, [
+            'name' => 'turn',
+            'value' => 'off',
+        ]);
+    }
+
+    /**
+     * @throws \Exception
+     * @throws GuzzleException
+     */
+    public function turnOn()
+    {
+        if (!$this->controllable || !in_array('turn', $this->supportedCommands)) {
+            throw new \Exception("Device {$this->deviceId} cannot be turned on.");
+        }
+
+        return $this->client->controlDevice($this, [
+            'name' => 'turn',
+            'value' => 'on',
+        ]);
     }
 }
