@@ -68,6 +68,17 @@ class Device
         return $this->setColor(...$this->hexToRgb($hex));
     }
 
+    public function setWhiteTemperature(int $temperature)
+    {
+        if($temperature < 2000 || $temperature > 9000) {
+            throw new \Exception("Temperature must be between 2000 and 9000");
+        }
+        return $this->client->controlDevice($this, [
+            'name' => 'colorTem',
+            'value' => $temperature,
+        ]);
+    }
+
     private function hexToRgb(string $hex):array
     {
             // Remove the # if present
