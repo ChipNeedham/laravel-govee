@@ -28,35 +28,15 @@ class Device
         $this->supportedCommands = $data['supportCmds'] ?? [];
     }
 
-    /**
-     * @throws \Exception
-     * @throws GuzzleException
-     */
-    public function turnOff()
+    public function setPowerState(bool $on)
     {
         if (!$this->controllable || !in_array('turn', $this->supportedCommands)) {
-            throw new \Exception("Device {$this->deviceId} cannot be turned off.");
+            throw new \Exception("Device {$this->deviceId} cannot be turned ".$on ? 'on.' : 'off.');
         }
 
         return $this->client->controlDevice($this, [
             'name' => 'turn',
-            'value' => 'off',
-        ]);
-    }
-
-    /**
-     * @throws \Exception
-     * @throws GuzzleException
-     */
-    public function turnOn()
-    {
-        if (!$this->controllable || !in_array('turn', $this->supportedCommands)) {
-            throw new \Exception("Device {$this->deviceId} cannot be turned on.");
-        }
-
-        return $this->client->controlDevice($this, [
-            'name' => 'turn',
-            'value' => 'on',
+            'value' => $on ? 'on' : 'off',
         ]);
     }
 }
