@@ -63,4 +63,11 @@ class GoveeApiClient
 
         return $data;
     }
+    public function getDevice(string $deviceId, string $modelId): Device
+    {
+        return new Device($this, [
+            'device' => $deviceId,
+            'model' => $modelId,
+        ]);
+    }
 }

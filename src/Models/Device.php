@@ -11,7 +11,7 @@ class Device
 {
     protected GoveeApiClient $client; // To make API calls
     public string $deviceId;  // API: "device"
-    public string $name;      // API: "deviceName"
+    public ?string $name;      // API: "deviceName"
     public string $model;     // API: "model"
     public bool $controllable; // API: "controllable"
     public bool $retrievable;  // API: "retrievable"
@@ -20,9 +20,9 @@ class Device
     public function __construct(GoveeApiClient $client, array $data)
     {
         $this->client = $client;
-        $this->deviceId = $data['device'] ?? null;
+        $this->deviceId = $data['device'];
         $this->name = $data['deviceName'] ?? null;
-        $this->model = $data['model'] ?? null;
+        $this->model = $data['model'];
         $this->controllable = $data['controllable'] ?? false;
         $this->retrievable = $data['retrievable'] ?? false;
         $this->supportedCommands = $data['supportCmds'] ?? [];
@@ -30,13 +30,20 @@ class Device
 
     public function setPowerState(bool $on)
     {
-        if (!$this->controllable || !in_array('turn', $this->supportedCommands)) {
-            throw new \Exception("Device {$this->deviceId} cannot be turned ".$on ? 'on.' : 'off.');
-        }
-
         return $this->client->controlDevice($this, [
             'name' => 'turn',
             'value' => $on ? 'on' : 'off',
+        ]);
+    }
+
+    public function setBrightness(int $level)
+    {
+        if($level < 1 || $level > 100) {
+            throw new \Exception("Brightness level must be between 1 and 100");
+        }
+        return $this->client->controlDevice($this, [
+            'name' => 'brightness',
+            'value' => $level,
         ]);
     }
 }
