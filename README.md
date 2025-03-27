@@ -23,7 +23,8 @@ This will create a `config/govee.php` file. Add your Govee API key to your `.env
 ```php
 GOVEE_API_KEY=your_govee_api_key_here
 ```
-
+### Getting an API key
+[See Govee's Docs](https://developer.govee.com/reference/apply-you-govee-api-key)
 
 ## Usage
 
