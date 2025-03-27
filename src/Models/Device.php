@@ -46,4 +46,50 @@ class Device
             'value' => $level,
         ]);
     }
+
+    public function setColor(int $red, int $green, int $blue)
+    {
+        if($red < 0 || $red > 255 || $green < 0 || $green > 255 || $blue < 0 || $blue > 255) {
+            throw new \Exception("Color values must be between 0 and 255");
+        }
+        return $this->client->controlDevice($this, [
+            'name' => 'color',
+            'value' => [
+                'r' => $red,
+                'g' => $green,
+                'b' => $blue,
+            ],
+        ]);
+    }
+
+    public function setHexColor(string $hex)
+    {
+        $hex = ltrim($hex, '#');
+        return $this->setColor(...$this->hexToRgb($hex));
+    }
+
+    private function hexToRgb(string $hex):array
+    {
+            // Remove the # if present
+            $hex = ltrim($hex, '#');
+
+            // Validate hex color format
+            if (!preg_match('/^([0-9A-Fa-f]{3}){1,2}$/', $hex)) {
+                throw new \Exception("Invalid hex color format");
+            }
+
+            // Handle 3-digit and 6-digit hex colors
+            if (strlen($hex) === 3) {
+                $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            }
+
+            // Convert hex to RGB
+            return [
+                hexdec(substr($hex, 0, 2)),   // Red
+                hexdec(substr($hex, 2, 2)),   // Green
+                hexdec(substr($hex, 4, 2))    // Blue
+            ];
+
+
+    }
 }
