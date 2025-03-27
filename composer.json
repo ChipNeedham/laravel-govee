@@ -1,0 +1,19 @@
+{
+  "name": "chipneedham/laravel-govee",
+  "description": "integrating Govee with Laravel",
+  "type": "laravel-package",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Chipneedham\\LaravelGovee\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "chipneedham",
+      "email": "chipneedham7@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
+}
